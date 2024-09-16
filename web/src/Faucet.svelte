@@ -9,10 +9,10 @@
     account: '0x0000000000000000000000000000000000000000',
     network: 'testnet',
     payout: 1000000000,
-    symbol: 'ETH',
+    symbol: 'HAUST',
     hcaptcha_sitekey: '',
-    logo_url: '/gatewayfm-logo.svg',
-    background_url: 'background.jpg'
+    logo_url: '/logo-faucet.png',
+    background_url: '/bg-faucet-grey.jpg'
   };
 
   let mounted = false;
@@ -158,13 +158,13 @@
               <span class="icon icon-brand">
                 <img src={faucetInfo.logo_url} alt="logo"/>
               </span>
-              <span><b>{faucetInfo.symbol} Faucet</b></span>
+            <!--   <span><b>{faucetInfo.symbol} Faucet</b></span> -->
             </a>
           </div>
           <div id="navbarMenu" class="navbar-menu">
             <div class="navbar-end">
               <span class="navbar-item">
-                <a
+                <!-- <a
                   class="button is-white is-outlined"
                   href="https://github.com/chainflag/eth-faucet"
                 >
@@ -172,7 +172,7 @@
                     <i class="fa fa-github" />
                   </span>
                   <span>View Source</span>
-                </a>
+                </a> -->
               </span>
             </div>
           </div>
@@ -183,15 +183,17 @@
     <div class="hero-body">
       <div class="container has-text-centered">
         <div class="column is-6 is-offset-3">
-          <h1 class="title">
-            Receive {gweiToEth(faucetInfo.payout)}
-            {faucetInfo.symbol} per request
-          </h1>
-          <h2 class="subtitle">
-            Serving from {faucetInfo.account}
-          </h2>
           <div id="hcaptcha" data-size="invisible"></div>
           <div class="box">
+            <h1 class="title">
+              Receive
+              {gweiToEth(faucetInfo.payout)}
+              {faucetInfo.symbol} per request
+            </h1>
+            <h2 class="subtitle">
+              <p>Serving from </p>
+              {faucetInfo.account}
+            </h2>
             <div class="field is-grouped">
               <p class="control is-expanded">
                 <input
@@ -220,7 +222,7 @@
 <style>
 
 	.icon-brand {
-		width: 5rem;
+		width: 10rem;
 		margin: 1rem;
 	}
 
@@ -238,6 +240,24 @@
     line-height: 1.5;
   }
   .box {
-    border-radius: 19px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
   }
+  button.button.is-primary.is-rounded{
+    border-radius: 12px;
+    background: #46FFF4;
+    padding: 12px 16px;
+    color: #000;
+  }
+  ::placeholder{
+    color: #727272 !important;
+  }
+  input.input.is-rounded {
+    color: #ccc !important;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.60);
+    background: rgba(0, 0, 0, 0.20);
+    box-shadow: 0px 1px 2px 0px rgba(10, 10, 10, 0.05) inset;
+}
 </style>

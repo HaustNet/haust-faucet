@@ -24,6 +24,8 @@ RUN go build -o eth-faucet -ldflags "-s -w"
 
 FROM alpine
 
+LABEL org.opencontainers.image.source=https://github.com/HaustNet/haust-faucet
+
 RUN apk add --no-cache ca-certificates
 
 COPY --from=backend /backend-build/eth-faucet /app/eth-faucet

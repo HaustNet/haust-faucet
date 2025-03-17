@@ -50,6 +50,11 @@ func (l *Limiter) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.Ha
 	}
 
 	clintIP := getClientIPFromRequest(l.proxyCount, r)
+	log.WithFields(log.Fields{
+		"clintIP": clintIP,
+		"address": address,
+	}).Infof("Request %s received", r.URL.Path)
+
 	l.mutex.Lock()
 	if l.limitByKey(w, address) || l.limitByKey(w, clintIP) {
 		l.mutex.Unlock()

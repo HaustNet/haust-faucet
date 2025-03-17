@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/chainflag/eth-faucet/internal/chain"
 	"github.com/chainflag/eth-faucet/internal/server"
@@ -63,6 +64,7 @@ func Execute() {
 		panic(fmt.Errorf("cannot connect to web3 provider: %w", err))
 	}
 	config := server.NewConfig(*netnameFlag, *symbolFlag, *httpPortFlag, *intervalFlag, *payoutFlag, *proxyCntFlag, *hcaptchaSiteKeyFlag, *hcaptchaSecretFlag, *logoFlag, *backgroundFlag)
+	log.Infof("starting with config: %+v", config)
 	go server.NewServer(txBuilder, config).Run()
 
 	c := make(chan os.Signal, 1)

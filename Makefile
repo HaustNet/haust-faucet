@@ -1,6 +1,6 @@
 .PHONY: docker-build docker-push
 
-VERSION=1.1.1
+VERSION=1.2.0
 DOCKER_IMAGE=ghcr.io/haustnet/haust-faucet:$(VERSION)
 DOCKER_CONTAINER_NAME=haust-faucet
 

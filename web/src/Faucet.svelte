@@ -69,7 +69,7 @@
   }
 
   setToast({
-    position: 'bottom-center',
+    position: 'center',
     dismissible: true,
     pauseOnHover: true,
     closeOnClick: false,

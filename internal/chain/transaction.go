@@ -47,6 +47,8 @@ func NewTxBuilder(provider string, privateKey *ecdsa.PrivateKey, chainID *big.In
 		return nil, err
 	}
 
+	log.Infof("supportsEIP1559: %v", supportsEIP1559)
+
 	txBuilder := &TxBuild{
 		client:          client,
 		privateKey:      privateKey,
@@ -81,6 +83,13 @@ func (b *TxBuild) Transfer(ctx context.Context, to string, value *big.Int) (comm
 		return common.Hash{}, err
 	}
 
+	bJSON, err := unsignedTx.MarshalJSON()
+	if err != nil {
+		log.Errorf("tx marshal JSON error: %v", err)
+	} else {
+		log.Infof("tx %s: %s", unsignedTx.Hash().Hex(), string(bJSON))
+	}
+
 	signedTx, err := types.SignTx(unsignedTx, b.signer, b.privateKey)
 	if err != nil {
 		return common.Hash{}, err
@@ -95,6 +104,17 @@ func (b *TxBuild) Transfer(ctx context.Context, to string, value *big.Int) (comm
 
 		return common.Hash{}, err
 	}
+
+	//go func() {
+	//	// Wait for transaction to be mined and get receipt
+	//	receipt, err := bind.WaitMined(ctx, b.client.(bind.DeployBackend), signedTx)
+	//	if err != nil {
+	//		log.Errorf("failed to get receipt for tx %s: %v", signedTx.Hash().Hex(), err)
+	//	} else {
+	//		log.Infof("tx %s confirmed in block %d with status %d",
+	//			signedTx.Hash().Hex(), receipt.BlockNumber, receipt.Status)
+	//	}
+	//}()
 
 	log.Infof("sent tx %s to %s", signedTx.Hash(), to)
 

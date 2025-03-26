@@ -5,7 +5,9 @@ DOCKER_IMAGE=ghcr.io/haustnet/haust-faucet:$(VERSION)
 DOCKER_CONTAINER_NAME=haust-faucet
 
 docker-build:
-	docker build -t $(DOCKER_IMAGE) .
+	docker build \
+		--label "org.opencontainers.image.source=https://github.com/HaustNet/haust-faucet" \
+		-t $(DOCKER_IMAGE) .
 
 docker-push:
 	docker push $(DOCKER_IMAGE)

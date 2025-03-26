@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -87,7 +88,7 @@ func (b *TxBuild) Transfer(ctx context.Context, to string, value *big.Int) (comm
 	if err != nil {
 		log.Errorf("tx marshal JSON error: %v", err)
 	} else {
-		log.Infof("tx %s: %s", unsignedTx.Hash().Hex(), string(bJSON))
+		log.WithField("txHash", unsignedTx.Hash().String()).Infof("tx content: %s", string(bJSON))
 	}
 
 	signedTx, err := types.SignTx(unsignedTx, b.signer, b.privateKey)
@@ -95,8 +96,9 @@ func (b *TxBuild) Transfer(ctx context.Context, to string, value *big.Int) (comm
 		return common.Hash{}, err
 	}
 
-	if err = b.client.SendTransaction(ctx, signedTx); err != nil {
-		log.Error("failed to send tx", "tx hash", signedTx.Hash().String(), "err", err)
+	err = b.client.SendTransaction(ctx, signedTx)
+	if err != nil {
+		log.WithField("txHash", signedTx.Hash().String()).Errorf("failed to send tx: %v", err)
 
 		if strings.Contains(strings.ToLower(err.Error()), "nonce") {
 			b.refreshNonce(context.Background())
@@ -105,16 +107,20 @@ func (b *TxBuild) Transfer(ctx context.Context, to string, value *big.Int) (comm
 		return common.Hash{}, err
 	}
 
-	//go func() {
-	//	// Wait for transaction to be mined and get receipt
-	//	receipt, err := bind.WaitMined(ctx, b.client.(bind.DeployBackend), signedTx)
-	//	if err != nil {
-	//		log.Errorf("failed to get receipt for tx %s: %v", signedTx.Hash().Hex(), err)
-	//	} else {
-	//		log.Infof("tx %s confirmed in block %d with status %d",
-	//			signedTx.Hash().Hex(), receipt.BlockNumber, receipt.Status)
-	//	}
-	//}()
+	go func() {
+		// Wait for transaction to be mined and get receipt
+		waitCtx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
+
+		receipt, err := bind.WaitMined(waitCtx, b.client.(bind.DeployBackend), signedTx)
+		if err != nil {
+			log.WithField("txHash", signedTx.Hash().String()).
+				Errorf("failed to get receipt for tx: %v", err)
+		} else {
+			log.WithField("txHash", signedTx.Hash().String()).
+				Infof("tx confirmed in block %d with status %d", receipt.BlockNumber, receipt.Status)
+		}
+	}()
 
 	log.Infof("sent tx %s to %s", signedTx.Hash(), to)
 

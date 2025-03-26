@@ -173,10 +173,10 @@ func (b *TxBuild) getAndIncrementNonce() uint64 {
 }
 
 func (b *TxBuild) refreshNonce(ctx context.Context) {
-	log.Info("refreshing nonce")
+	log.WithField("sub_path", "nonce").Info("refreshing nonce")
 	nonce, err := b.client.PendingNonceAt(ctx, b.Sender())
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithField("sub_path", "nonce").WithFields(log.Fields{
 			"address": b.Sender(),
 			"error":   err,
 		}).Error("failed to refresh account nonce")
@@ -184,7 +184,7 @@ func (b *TxBuild) refreshNonce(ctx context.Context) {
 	}
 
 	atomic.StoreUint64(&b.nonce, nonce)
-	log.Infof("successfully refreshed account nonce: %d", nonce)
+	log.WithField("sub_path", "nonce").Infof("successfully refreshed account nonce: %d", nonce)
 }
 
 func checkEIP1559Support(client *ethclient.Client) (bool, error) {

@@ -49,20 +49,20 @@ func (l *Limiter) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.Ha
 		return
 	}
 
-	//clintIP := getClientIPFromRequest(l.proxyCount, r)
+	clintIP := getClientIPFromRequest(l.proxyCount, r)
 	log.WithFields(log.Fields{
 		"X-Forwarded-For": r.Header.Get("X-Forwarded-For"),
-		//"clintIP":         clintIP,
-		"address": address,
+		"clintIP":         clintIP,
+		"address":         address,
 	}).Infof("Request %s received", r.URL.Path)
 
 	l.mutex.Lock()
-	if l.limitByKey(w, address) { // || l.limitByKey(w, clintIP) {
+	if l.limitByKey(w, address) || l.limitByKey(w, clintIP) {
 		l.mutex.Unlock()
 		return
 	}
 	l.cache.SetWithTTL(address, true, l.ttl)
-	//l.cache.SetWithTTL(clintIP, true, l.ttl)
+	l.cache.SetWithTTL(clintIP, true, l.ttl)
 	l.mutex.Unlock()
 
 	next.ServeHTTP(w, r)

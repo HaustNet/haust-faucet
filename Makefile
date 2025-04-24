@@ -1,12 +1,12 @@
 .PHONY: docker-build docker-push
 
 VERSION=1.3.0
-DOCKER_IMAGE=ghcr.io/haustnet/haust-faucet:$(VERSION)
+DOCKER_IMAGE=ghcr.io/haust-devs/faucet:$(VERSION)
 DOCKER_CONTAINER_NAME=haust-faucet
 
 docker-build:
 	docker build \
-		--label "org.opencontainers.image.source=https://github.com/HaustNet/haust-faucet" \
+		--label "org.opencontainers.image.source=https://github.com/Haust-Devs/faucet" \
 		-t $(DOCKER_IMAGE) .
 
 docker-push:
